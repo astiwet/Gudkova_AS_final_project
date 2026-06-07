@@ -1,4 +1,4 @@
-
+import allure
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -9,22 +9,22 @@ class PersonPage:
 
     def __init__(self, driver: WebDriver) -> None:
         self.__driver = driver
+        self.wait = WebDriverWait(self.__driver, 10)
 
-    def get_current_url(self) -> str:
-        return self.__driver.current_url
-    
-    def result_p_name(self) -> str:
-        WebDriverWait(self.__driver, 15).until(
-            EC.visibility_of_element_located((
-                By.XPATH, "//h1[text()='Мария Миронова']")))
+    @allure.step("Получить имя и фамилию персоны")
+    def result_people_name(self) -> str:
+        self.wait.until(EC.visibility_of_element_located((
+                By.XPATH, "//h1[@data-tid='f22e0093']")))
         result = self.__driver.find_element(
-            By.XPATH, "//h1[text()='Мария Миронова']").text
+            By.XPATH, "//h1[@data-tid='f22e0093']").text
         return result
 
+    @allure.step("Найти фильм на странице персоны")
     def get_film(self) -> str:
-        films = (WebDriverWait(self.__driver, 30).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, "#bestMovies")))
-            )
-        fields = films.find_elements(By.TAG_NAME, 'li')
-        film = fields[3].text
-        return film.text
+        container = self.wait.until(
+            EC.visibility_of_element_located((
+                By.XPATH, "//div[@class='styles_panel__tOgnC']")))
+        films = container.find_elements(By.TAG_NAME, 'div')
+        fields = films[0].find_elements(By.TAG_NAME, 'li')
+        film = fields[1].text
+        return film

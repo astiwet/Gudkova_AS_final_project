@@ -10,6 +10,7 @@ class MainPage:
     def __init__(self, driver: WebDriver) -> None:
         self.__url = "https://www.kinopoisk.ru/"
         self.__driver = driver
+        self.wait = WebDriverWait(self.__driver, 10)
 
     @allure.step("Получить текущий URL")
     def go(self):
@@ -17,41 +18,32 @@ class MainPage:
 
     @allure.step("Найти фильм по названию")
     def found_film(self, name: str):
-        (WebDriverWait(self.__driver, 10).
-         until(EC.visibility_of_element_located((By.
-                                                 TAG_NAME, "input"))))
-
-        (self.__driver.find_element(By.TAG_NAME, "input").
-         send_keys(name))
-        (WebDriverWait(self.__driver, 10).until(
-            EC.visibility_of_element_located((
-                By.ID, "suggest_item_film_251733")))).click()
-
-    @allure.step("Получить текущий URL")
-    def get_current_url(self) -> str:
-        return self.__driver.current_url
+        self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "input")
+                                                         ))
+        self.__driver.find_element(By.TAG_NAME, "input").send_keys(name)
+        element = self.wait.until(EC.visibility_of_element_located((
+            By.XPATH, "//div[contains(@class, 'kinopoisk-header-suggest-group'"
+            ")][1]//article")))
+        element.click()
 
     @allure.step("Найти актера по фамилии и имени")
     def found_person(self, name: str):
-        (WebDriverWait(self.__driver, 10).
-         until(EC.visibility_of_element_located((By.
-                                                 TAG_NAME, "input"))))
-        (self.__driver.find_element(By.TAG_NAME, "input").
-         send_keys(name))
-        (WebDriverWait(self.__driver, 10).until(
-            EC.visibility_of_element_located((
-                By.ID, "suggest_item_person_231266"))))
-        (self.__driver.find_element(By.ID, "suggest_item_person_231266")
-         ).click()
+        self.wait.until(EC.visibility_of_element_located((By.TAG_NAME, "input")
+                                                         ))
+        self.__driver.find_element(By.TAG_NAME, "input").send_keys(name)
+        person = self.wait.until(EC.visibility_of_element_located((
+                By.XPATH, "//a[@id='suggest-item-person-231266']")))
+        person.click()
 
     @allure.step("Перейти в поиск фильмов в меню")
     def get_films(self):
-        WebDriverWait(self.__driver, 10).until(
-            EC.visibility_of_element_located((
-                By.CLASS_NAME, "styles_title__Jmj_H"))).click()
+        search = self.wait.until(EC.visibility_of_element_located((
+                By.XPATH, "//a[@href='/lists/categories/movies/1/']")))
+        search.click()
 
     @allure.step("Перейти в расширенный поиск")
     def advanced_search(self):
-        (WebDriverWait(self.__driver, 10).until(
+        search = self.wait.until(
             EC.visibility_of_element_located((
-                By.CLASS_NAME, "styles_advancedSearch__gh_09")))).click()
+                By.XPATH, "//a[@aria-label='Расширенный поиск']")))
+        search.click()

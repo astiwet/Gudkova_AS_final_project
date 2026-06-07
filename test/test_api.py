@@ -1,18 +1,19 @@
 from KinoApi import KinoApi
-api = KinoApi("https://api.poiskkino.dev/v.1.4",
-              "P3KJA14-2AHM4E1-H29RM91-772YQ1R")
+api = KinoApi("https://api.poiskkino.dev")
 
 
 def test_find_film_id():
-    resp, list = api.get_movie()
-    doc = list['docs'][0]
-    film_id = doc['id']
-    film_name = list["alternativeName"]
-    film, resp = api.get_movie_by_id(film_id)
-
-    assert film["alternativeName"] == film_name
-    assert len(list) > 1
+    resp, list_data = api.get_movie()
+    assert len(list_data) > 1
     assert resp.status_code == 200
+    doc = list_data['docs']
+    films = doc[0]
+    film_id = films['id']
+    film_name = films['alternativeName']
+    resp = api.get_movie_by_id(film_id)
+    movie = resp[1]
+    movie_name = movie['alternativeName']
+    assert movie_name == film_name
 
 
 def test_find_film_name():
@@ -38,11 +39,13 @@ def test_find_people_name():
 def test_find_people_id():
     name = "Иван Охлобыстин"
     resp, info = api.get_people_by_name(name)
+    assert resp.status_code == 200
     doc = info["docs"][0]
     people_id = doc['id']
-    people_name, resp = api.get_people_by_id(people_id)
-    person_name = people_name['name']
-    person_id = people_name['id']
+    resp, person = api.get_people_by_id(people_id)
+    assert resp.status_code == 200
+    person_name = person['name']
+    person_id = person['id']
 
     assert resp.status_code == 200
     assert person_id == people_id
@@ -50,13 +53,15 @@ def test_find_people_id():
 
 
 def test_find_film():
-    year = "2020"
+    year = '2020'
     genre = "фантастика"
     resp, film = api.get_film_year_and_genre(year, genre)
     doc = film["docs"][0]
-    film_genre = doc["genres"][1]
-    film_year = doc["year"]
+    film_genres = doc["genres"][1]
+    film_genre = film_genres['name']
+    film_year = doc['year']
 
     assert resp.status_code == 200
     assert film_genre == genre
-    assert film_year == year
+    assert str(film_year) == year
+
