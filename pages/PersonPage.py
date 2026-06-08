@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
 
 class PersonPage:
@@ -24,7 +25,7 @@ class PersonPage:
         container = self.wait.until(
             EC.visibility_of_element_located((
                 By.XPATH, "//div[@class='styles_panel__tOgnC']")))
-        films = container.find_elements(By.TAG_NAME, 'div')
-        fields = films[0].find_elements(By.TAG_NAME, 'li')
+        films: list[WebElement] = container.find_elements(By.TAG_NAME, 'div')
+        fields: list[WebElement] = films[0].find_elements(By.TAG_NAME, 'li')
         film = fields[1].text
         return film

@@ -2,6 +2,7 @@ import allure
 import pytest
 from selenium import webdriver
 
+
 @pytest.fixture
 def browser():
     with allure.step("Открыть и настроить браузер"):

@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
 
 class CartPage:
@@ -32,6 +33,6 @@ class CartPage:
         feedbacks = self.wait.until(
             EC.visibility_of_element_located((
                 By.CLASS_NAME, "styles_list__ByeEF")))
-        fields = feedbacks.find_elements(By.TAG_NAME, 'li')
+        fields: list[WebElement] = feedbacks.find_elements(By.TAG_NAME, 'li')
         actor = fields[1].text
         return actor

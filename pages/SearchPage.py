@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
 
 class SearchPage:
@@ -12,7 +13,7 @@ class SearchPage:
         self.wait = WebDriverWait(self.__driver, 10)
 
     @allure.step("Найти фильм по названию")
-    def search_film(self, name: str):
+    def search_film(self, name: str) -> None:
         self.wait.until(EC.visibility_of_element_located((By.ID, "find_film")))
         self.__driver.find_element(By.ID, "find_film").send_keys(name)
         element = self.wait.until(EC.visibility_of_element_located((
@@ -26,25 +27,26 @@ class SearchPage:
         result = res.text
         return result
 
-    @allure.step("Найти фильм по стране производства")
-    def search_country(self, name: str):
+    @allure.step("Ввести страну производства для поиска фильма")
+    def search_country(self, name: str) -> None:
         self.wait.until(EC.visibility_of_element_located((By.ID, "country")))
         (self.__driver.find_element(By.ID, "country").
          send_keys(name))
 
-    @allure.step("Найти фильм по году производства")
-    def search_year(self, number: int):
+    @allure.step("Ввести год производства для поиска фильма")
+    def search_year(self, number: int) -> None:
         (WebDriverWait(self.__driver, 10).
          until(EC.visibility_of_element_located((By.
                                                  ID, "year"))))
         (self.__driver.find_element(By.ID, "year").
          send_keys(number))
 
-    @allure.step("Найти фильм по жанру")
+    @allure.step("Выбрать жанр для поиска фильма")
     def search_genre(self):
         self.wait.until(EC.visibility_of_element_located((
             By.XPATH, "//select[@id='m_act[genre]']")))
-        genres = self.__driver.find_elements(By.TAG_NAME, 'option')
+        genres: list[WebElement] = self.__driver.find_elements(
+            By.TAG_NAME, 'option')
         genres[4].click()
 
     @allure.step("Получить результаты поиска по параметрам")
@@ -62,7 +64,7 @@ class SearchPage:
         return films
 
     @allure.step("Найти актера по имени и фамилии")
-    def search_people(self, name: str):
+    def search_people(self, name: str) -> None:
         element = self.wait.until(EC.element_to_be_clickable((
             By.XPATH, "//p[contains(text(), 'Искать актера')]")))
         self.__driver.execute_script(

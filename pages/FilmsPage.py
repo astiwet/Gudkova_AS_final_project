@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webdriver import WebDriver
+from selenium.webdriver.remote.webelement import WebElement
 
 
 class FilmsPage:
@@ -12,7 +13,7 @@ class FilmsPage:
         self.wait = WebDriverWait(self.__driver, 10)
 
     @allure.step("Перейти к поиску по году выпуска")
-    def get_years(self):
+    def get_years(self) -> None:
         self.wait.until(EC.visibility_of_element_located((
              By.XPATH, "//h1[text()='Списки']")))
         years_link = self.wait.until(EC.element_to_be_clickable((
@@ -31,7 +32,7 @@ class FilmsPage:
             By.XPATH, "//span[@class='styles_arrowIcon__1CH4G']").click()
         items = self.wait.until(EC.visibility_of_element_located((
             By.XPATH, "//div[@class='styles_itemWrapper__C3kJd']")))
-        item = items.find_elements(By.TAG_NAME, 'label')
+        item: list[WebElement] = items.find_elements(By.TAG_NAME, 'label')
         item[4].click()
         film = self.wait.until(EC.visibility_of_element_located((
                 By.XPATH, "//span[contains(text(), 'Аватар')]")))
